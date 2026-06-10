@@ -1,0 +1,40 @@
+{
+  "name": "concert-tracker",
+  "version": "1.0.0",
+  "description": "Automated concert announcement tracker for favorite artists",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "check": "ts-node src/index.ts --check-now",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "concert",
+    "tracker",
+    "notification",
+    "music"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "better-sqlite3": "^9.2.0",
+    "cheerio": "^1.0.0-rc.12",
+    "compromise": "^14.10.0",
+    "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.7",
+    "puppeteer": "^21.6.0",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.10.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

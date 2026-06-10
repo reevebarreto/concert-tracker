@@ -1,0 +1,31 @@
+{
+  "checkFrequency": "daily",
+  "notificationPreferences": {
+    "email": true,
+    "desktop": false,
+    "minDaysNotice": 7
+  },
+  "filters": {
+    "maxDistance": 200,
+    "preferredVenues": [],
+    "excludeKeywords": ["tribute", "cover band", "karaoke"],
+    "interestingKeywords": [
+      "tour announcement",
+      "new tour",
+      "tickets on sale",
+      "presale",
+      "just announced",
+      "coming to",
+      "live in",
+      "concert",
+      "festival"
+    ]
+  },
+  "dataSources": {
+    "bandsintown": true,
+    "songkick": true,
+    "socialMedia": false
+  }
+}
+
+// Made with Bob

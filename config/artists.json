@@ -1,0 +1,40 @@
+{
+  "artists": [
+    {
+      "name": "Arctic Monkeys",
+      "songkickId": null,
+      "bandsintownId": "Arctic Monkeys"
+    },
+    {
+      "name": "The Strokes",
+      "songkickId": null,
+      "bandsintownId": "The Strokes"
+    },
+    {
+      "name": "Radiohead",
+      "songkickId": null,
+      "bandsintownId": "Radiohead"
+    },
+    {
+      "name": "Coldplay",
+      "songkickId": null,
+      "bandsintownId": "Coldplay"
+    },
+    {
+      "name": "Malcolm Todd",
+      "songkickId": null,
+      "bandsintownId": "Malcolm Todd"
+    },
+    {
+      "name": "Daniel Caesar",
+      "songkickId": null,
+      "bandsintownId": "Daniel Caesar"
+    }
+  ],
+  "locations": [
+    {
+      "country": "Ireland",
+      "cities": ["Dublin", "Cork", "Galway", "Belfast"]
+    }
+  ]
+}
