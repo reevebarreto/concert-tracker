@@ -6,9 +6,11 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "check": "ts-node src/index.ts --check-now",
-    "test": "echo \"No tests yet\" && exit 0"
+    "start:v2": "node dist/index-v2.js",
+    "dev": "npx ts-node src/index.ts",
+    "dev:v2": "npx ts-node src/index-v2.ts",
+    "check": "npx ts-node src/index-v2.ts --check-now",
+    "test": "npx ts-node src/index-v2.ts --test"
   },
   "keywords": [
     "concert",
