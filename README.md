@@ -74,9 +74,7 @@ Edit `config/artists.json` to add/remove artists:
 {
   "artists": [
     {
-      "name": "Arctic Monkeys",
-      "songkickId": null,
-      "bandsintownId": "Arctic Monkeys"
+      "name": "Arctic Monkeys"
     }
   ],
   "locations": [
@@ -107,6 +105,16 @@ Edit `config/settings.json` to customize behavior:
 ```
 
 ## Usage
+
+### Import Artists from CSV (Optional):
+
+If you have a YouTube Music CSV export from Google Takeout:
+
+```bash
+npm run import-csv "music library songs.csv"
+```
+
+See [CSV-IMPORT-GUIDE.md](CSV-IMPORT-GUIDE.md) for complete setup instructions.
 
 ### Build the project:
 

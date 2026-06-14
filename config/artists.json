@@ -1,40 +1,579 @@
 {
   "artists": [
     {
-      "name": "Arctic Monkeys",
-      "songkickId": null,
-      "bandsintownId": "Arctic Monkeys"
+      "name": "$uicideboy$"
     },
     {
-      "name": "The Strokes",
-      "songkickId": null,
-      "bandsintownId": "The Strokes"
+      "name": "2hollis"
     },
     {
-      "name": "Radiohead",
-      "songkickId": null,
-      "bandsintownId": "Radiohead"
+      "name": "A$AP Rocky"
     },
     {
-      "name": "Coldplay",
-      "songkickId": null,
-      "bandsintownId": "Coldplay"
+      "name": "ABBA"
     },
     {
-      "name": "Malcolm Todd",
-      "songkickId": null,
-      "bandsintownId": "Malcolm Todd"
+      "name": "AC/DC"
     },
     {
-      "name": "Daniel Caesar",
-      "songkickId": null,
-      "bandsintownId": "Daniel Caesar"
+      "name": "Adam Levine"
+    },
+    {
+      "name": "Adrianne Lenker"
+    },
+    {
+      "name": "Adrián Berenguer"
+    },
+    {
+      "name": "Arctic Monkeys"
+    },
+    {
+      "name": "Ariana Grande"
+    },
+    {
+      "name": "Avenoir"
+    },
+    {
+      "name": "BONES"
+    },
+    {
+      "name": "BRAGA"
+    },
+    {
+      "name": "Bad Bunny"
+    },
+    {
+      "name": "Balu Brigada"
+    },
+    {
+      "name": "Ben E. King"
+    },
+    {
+      "name": "Benny Sings"
+    },
+    {
+      "name": "Benson Boone"
+    },
+    {
+      "name": "Bharg"
+    },
+    {
+      "name": "Billie Eilish"
+    },
+    {
+      "name": "Billy Joel"
+    },
+    {
+      "name": "Björn Skifs"
+    },
+    {
+      "name": "Blue Swede"
+    },
+    {
+      "name": "Born In Goa"
+    },
+    {
+      "name": "Bruno Major"
+    },
+    {
+      "name": "Bruno Mars"
+    },
+    {
+      "name": "Bryant Barnes"
+    },
+    {
+      "name": "Casablanca Pops Orchestra"
+    },
+    {
+      "name": "Chevy"
+    },
+    {
+      "name": "Chezile"
+    },
+    {
+      "name": "Cigarettes After Sex"
+    },
+    {
+      "name": "Clairo"
+    },
+    {
+      "name": "Coldplay"
+    },
+    {
+      "name": "Constanze Hochwartner"
+    },
+    {
+      "name": "Cyrus Berne"
+    },
+    {
+      "name": "Daniel Caesar"
+    },
+    {
+      "name": "David Bowie"
+    },
+    {
+      "name": "Dayglow"
+    },
+    {
+      "name": "DeVotchKa"
+    },
+    {
+      "name": "Dead Calm"
+    },
+    {
+      "name": "Declan McKenna"
+    },
+    {
+      "name": "Dexys Midnight Runners"
+    },
+    {
+      "name": "Doja Cat"
+    },
+    {
+      "name": "Don Toliver"
+    },
+    {
+      "name": "Dr. Dog"
+    },
+    {
+      "name": "Earth, Wind & Fire"
+    },
+    {
+      "name": "Ed Sheeran"
+    },
+    {
+      "name": "Edward Sharpe & The Magnetic Zeros"
+    },
+    {
+      "name": "Electric Light Orchestra"
+    },
+    {
+      "name": "Elttwo"
+    },
+    {
+      "name": "Elvis Presley"
+    },
+    {
+      "name": "Emma Stone"
+    },
+    {
+      "name": "Eurythmics"
+    },
+    {
+      "name": "Father John Misty"
+    },
+    {
+      "name": "Frank Ocean"
+    },
+    {
+      "name": "Frank Sinatra"
+    },
+    {
+      "name": "Franz Ferdinand"
+    },
+    {
+      "name": "GENER8ION"
+    },
+    {
+      "name": "GROUPLOVE"
+    },
+    {
+      "name": "Goo Goo Dolls"
+    },
+    {
+      "name": "H.E.R."
+    },
+    {
+      "name": "Hallie Coggins"
+    },
+    {
+      "name": "Harry James"
+    },
+    {
+      "name": "Harry Styles"
+    },
+    {
+      "name": "Holy Fuck"
+    },
+    {
+      "name": "Home"
+    },
+    {
+      "name": "Hoobastank"
+    },
+    {
+      "name": "Hozier"
+    },
+    {
+      "name": "INOHA"
+    },
+    {
+      "name": "IV Of Spades"
+    },
+    {
+      "name": "Iggy Pop"
+    },
+    {
+      "name": "Inés Hall"
+    },
+    {
+      "name": "Isaiah Sheffield"
+    },
+    {
+      "name": "Israel Kamakawiwo'ole"
+    },
+    {
+      "name": "James Bay"
+    },
+    {
+      "name": "Janelle Monáe"
+    },
+    {
+      "name": "Jason Mraz"
+    },
+    {
+      "name": "Joe P"
+    },
+    {
+      "name": "John Mayer"
+    },
+    {
+      "name": "John Newman"
+    },
+    {
+      "name": "Joji"
+    },
+    {
+      "name": "Joy Again"
+    },
+    {
+      "name": "K'NAAN"
+    },
+    {
+      "name": "Kanye West"
+    },
+    {
+      "name": "Keane"
+    },
+    {
+      "name": "Kendrick Lamar"
+    },
+    {
+      "name": "Lady Gaga"
+    },
+    {
+      "name": "Lana Del Rey"
+    },
+    {
+      "name": "Laufey"
+    },
+    {
+      "name": "Lauv"
+    },
+    {
+      "name": "Le Tigre"
+    },
+    {
+      "name": "Lifafa"
+    },
+    {
+      "name": "Lola Young"
+    },
+    {
+      "name": "Los Retros"
+    },
+    {
+      "name": "Louis Armstrong"
+    },
+    {
+      "name": "Lyn Lapid"
+    },
+    {
+      "name": "M. Byrd"
+    },
+    {
+      "name": "M.I.A."
+    },
+    {
+      "name": "MGMT"
+    },
+    {
+      "name": "Mac DeMarco"
+    },
+    {
+      "name": "Malcolm Todd"
+    },
+    {
+      "name": "Metallica"
+    },
+    {
+      "name": "Metro Boomin"
+    },
+    {
+      "name": "MidnightSoul79"
+    },
+    {
+      "name": "Mike Krol"
+    },
+    {
+      "name": "MiracVR"
+    },
+    {
+      "name": "Mitski"
+    },
+    {
+      "name": "Mustafa"
+    },
+    {
+      "name": "Mychael Danna"
+    },
+    {
+      "name": "MysticSound38"
+    },
+    {
+      "name": "NAPA"
+    },
+    {
+      "name": "Nancy Sinatra"
+    },
+    {
+      "name": "Oasis"
+    },
+    {
+      "name": "Olivia Dean"
+    },
+    {
+      "name": "Olivia Rodrigo"
+    },
+    {
+      "name": "One Direction"
+    },
+    {
+      "name": "OneRepublic"
+    },
+    {
+      "name": "P.T. Adamczyk"
+    },
+    {
+      "name": "PARTYNEXTDOOR"
+    },
+    {
+      "name": "Phillip Phillips"
+    },
+    {
+      "name": "Pinegrove"
+    },
+    {
+      "name": "Plain White T's"
+    },
+    {
+      "name": "Pomme"
+    },
+    {
+      "name": "Post Malone"
+    },
+    {
+      "name": "Princeton Colaco"
+    },
+    {
+      "name": "Pusha T"
+    },
+    {
+      "name": "Queen"
+    },
+    {
+      "name": "Rachael Yamagata"
+    },
+    {
+      "name": "Radiohead"
+    },
+    {
+      "name": "Red Hot Chili Peppers"
+    },
+    {
+      "name": "Redbone"
+    },
+    {
+      "name": "Rex Orange County"
+    },
+    {
+      "name": "Roisee"
+    },
+    {
+      "name": "Rosa Walton"
+    },
+    {
+      "name": "Ryan Gosling"
+    },
+    {
+      "name": "Ryce"
+    },
+    {
+      "name": "SZA"
+    },
+    {
+      "name": "Sabrina Carpenter"
+    },
+    {
+      "name": "Sex Bob-Omb"
+    },
+    {
+      "name": "Skeletron"
+    },
+    {
+      "name": "Sleeping At Last"
+    },
+    {
+      "name": "Snow Patrol"
+    },
+    {
+      "name": "Stardust"
+    },
+    {
+      "name": "Stromae"
+    },
+    {
+      "name": "Suki Waterhouse"
+    },
+    {
+      "name": "Swae Lee"
+    },
+    {
+      "name": "Swedish House Mafia"
+    },
+    {
+      "name": "Tanmaya Bhatnagar"
+    },
+    {
+      "name": "Tao Mon Amour"
+    },
+    {
+      "name": "Teddy Swims"
+    },
+    {
+      "name": "Teddybears"
+    },
+    {
+      "name": "The 1975"
+    },
+    {
+      "name": "The Backseat Lovers"
+    },
+    {
+      "name": "The Beatles"
+    },
+    {
+      "name": "The Black Skirts"
+    },
+    {
+      "name": "The Foundations"
+    },
+    {
+      "name": "The Killers"
+    },
+    {
+      "name": "The Last Shadow Puppets"
+    },
+    {
+      "name": "The Marías"
+    },
+    {
+      "name": "The Police"
+    },
+    {
+      "name": "The Proclaimers"
+    },
+    {
+      "name": "The Royal Concept"
+    },
+    {
+      "name": "The Smiths"
+    },
+    {
+      "name": "The Strokes"
+    },
+    {
+      "name": "The Weeknd"
+    },
+    {
+      "name": "The White Stripes"
+    },
+    {
+      "name": "Tipling Rock"
+    },
+    {
+      "name": "Tsumyoki"
+    },
+    {
+      "name": "Two Door Cinema Club"
+    },
+    {
+      "name": "Tyler, The Creator"
+    },
+    {
+      "name": "Usher"
+    },
+    {
+      "name": "WILLIS"
+    },
+    {
+      "name": "Waking Grunt"
+    },
+    {
+      "name": "Wheatus"
+    },
+    {
+      "name": "Will Paquin"
+    },
+    {
+      "name": "Wolf Parade"
+    },
+    {
+      "name": "Yung Lean"
+    },
+    {
+      "name": "beabadoobee"
+    },
+    {
+      "name": "d4vd"
+    },
+    {
+      "name": "fun."
+    },
+    {
+      "name": "gini"
+    },
+    {
+      "name": "grentperez"
+    },
+    {
+      "name": "keshi"
+    },
+    {
+      "name": "marQ"
+    },
+    {
+      "name": "she's green"
+    },
+    {
+      "name": "sombr"
+    },
+    {
+      "name": "twenty one pilots"
+    },
+    {
+      "name": "wave to earth"
     }
   ],
   "locations": [
     {
       "country": "Ireland",
-      "cities": ["Dublin", "Cork", "Galway", "Belfast"]
+      "cities": [
+        "Dublin",
+        "Cork",
+        "Galway",
+        "Belfast"
+      ]
     }
   ]
 }
