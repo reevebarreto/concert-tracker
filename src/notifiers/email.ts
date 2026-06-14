@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { Concert } from "../database/schema";
+import { ArtistInfoService, ArtistInfo } from "../services/artist-info";
 
 export interface EmailConfig {
   service: string;
@@ -12,10 +13,12 @@ export class EmailNotifier {
   private transporter: nodemailer.Transporter;
   private to: string;
   private fromEmail: string;
+  private artistInfoService: ArtistInfoService;
 
   constructor(config: EmailConfig) {
     this.to = config.to;
     this.fromEmail = config.user;
+    this.artistInfoService = new ArtistInfoService();
     this.transporter = nodemailer.createTransport({
       service: config.service,
       auth: {
@@ -31,8 +34,15 @@ export class EmailNotifier {
       return;
     }
 
+    // Get unique artist names
+    const uniqueArtists = [...new Set(concerts.map((c) => c.artistName))];
+
+    console.log("🎨 Fetching artist information...");
+    const artistInfoMap =
+      await this.artistInfoService.getMultipleArtistInfo(uniqueArtists);
+
     const subject = `🎵 ${concerts.length} New Concert${concerts.length > 1 ? "s" : ""} Announced!`;
-    const html = this.generateEmailHTML(concerts);
+    const html = this.generateEmailHTML(concerts, artistInfoMap);
 
     try {
       await this.transporter.sendMail({
@@ -51,7 +61,10 @@ export class EmailNotifier {
     }
   }
 
-  private generateEmailHTML(concerts: Concert[]): string {
+  private generateEmailHTML(
+    concerts: Concert[],
+    artistInfoMap: Map<string, ArtistInfo>,
+  ): string {
     const groupedByArtist = this.groupConcertsByArtist(concerts);
 
     let html = `
@@ -120,7 +133,62 @@ export class EmailNotifier {
     `;
 
     for (const [artist, artistConcerts] of Object.entries(groupedByArtist)) {
-      html += `<h2>${artist}</h2>`;
+      const artistInfo = artistInfoMap.get(artist);
+
+      // Artist header with image and links
+      html += `
+        <div style="margin-top: 40px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <div style="display: flex; align-items: center; margin-bottom: 20px;">
+            ${
+              artistInfo?.imageUrl
+                ? `
+              <img src="${artistInfo.imageUrl}"
+                   alt="${artist}"
+                   style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-right: 20px; border: 3px solid #1DB954;">
+            `
+                : `
+              <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #1DB954 0%, #1ed760 100%); margin-right: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; font-weight: bold;">
+                ${artist.charAt(0).toUpperCase()}
+              </div>
+            `
+            }
+            <div style="flex: 1;">
+              <h2 style="margin: 0 0 10px 0; color: #191414;">${artist}</h2>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                ${
+                  artistInfo?.youtubeUrl
+                    ? `
+                  <a href="${artistInfo.youtubeUrl}"
+                     style="display: inline-flex; align-items: center; padding: 6px 12px; background: #FF0000; color: white; text-decoration: none; border-radius: 4px; font-size: 12px;">
+                    ▶️ YouTube Music
+                  </a>
+                `
+                    : ""
+                }
+                ${
+                  artistInfo?.websiteUrl
+                    ? `
+                  <a href="${artistInfo.websiteUrl}"
+                     style="display: inline-flex; align-items: center; padding: 6px 12px; background: #666; color: white; text-decoration: none; border-radius: 4px; font-size: 12px;">
+                    🌐 Website
+                  </a>
+                `
+                    : ""
+                }
+                ${
+                  artistInfo?.spotifyUrl
+                    ? `
+                  <a href="${artistInfo.spotifyUrl}"
+                     style="display: inline-flex; align-items: center; padding: 6px 12px; background: #1DB954; color: white; text-decoration: none; border-radius: 4px; font-size: 12px;">
+                    🎵 Spotify
+                  </a>
+                `
+                    : ""
+                }
+              </div>
+            </div>
+          </div>
+      `;
 
       for (const concert of artistConcerts) {
         // Handle date formatting - check if it's a valid date or "TBD"
@@ -153,6 +221,8 @@ export class EmailNotifier {
           </div>
         `;
       }
+
+      html += `</div>`; // Close artist section
     }
 
     html += `

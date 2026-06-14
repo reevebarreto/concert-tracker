@@ -196,9 +196,6 @@
       "name": "Holy Fuck"
     },
     {
-      "name": "Home"
-    },
-    {
       "name": "Hoobastank"
     },
     {
@@ -568,12 +565,7 @@
   "locations": [
     {
       "country": "Ireland",
-      "cities": [
-        "Dublin",
-        "Cork",
-        "Galway",
-        "Belfast"
-      ]
+      "cities": ["Dublin", "Cork", "Galway", "Belfast"]
     }
   ]
 }
