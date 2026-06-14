@@ -154,9 +154,11 @@ class ConcertTrackerV2 {
       }
     }
 
-    // Deduplicate announcements by URL
+    // Deduplicate announcements by URL + artist combination
     const uniqueAnnouncements = Array.from(
-      new Map(newAnnouncements.map((a) => [a.link, a])).values(),
+      new Map(
+        newAnnouncements.map((a) => [`${a.link}-${a.artist}`, a]),
+      ).values(),
     );
 
     console.log(
@@ -165,8 +167,15 @@ class ConcertTrackerV2 {
 
     if (uniqueAnnouncements.length > 0) {
       // Convert announcements to Concert format for email
-      const concertsForEmail: Concert[] = uniqueAnnouncements.map(
-        (announcement) => {
+      const concertsForEmail: Concert[] = [];
+
+      for (const announcement of uniqueAnnouncements) {
+        // Split multiple artists if they're comma-separated
+        const artists = announcement.artist.split(",").map((a) => a.trim());
+
+        for (const artist of artists) {
+          if (!artist) continue;
+
           // Try to extract date from content (simple regex)
           const dateMatch = announcement.content.match(
             /\b(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})\b/,
@@ -182,20 +191,30 @@ class ConcertTrackerV2 {
             eventDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
           }
 
-          return {
-            artistName: announcement.artist,
-            venueName: "TBD",
+          // Extract venue from source if it's a venue scrape
+          let venueName = "TBD";
+          if (
+            announcement.source.includes("Arena") ||
+            announcement.source.includes("Theatre") ||
+            announcement.source.includes("Street")
+          ) {
+            venueName = announcement.source;
+          }
+
+          concertsForEmail.push({
+            artistName: artist,
+            venueName: venueName,
             venueCity: "Ireland",
             venueCountry: "Ireland",
             eventDate: eventDate,
             eventUrl: announcement.link,
             source: announcement.source,
-            sourceId: `web-${announcement.link.replace(/[^a-zA-Z0-9]/g, "-")}`,
+            sourceId: `web-${announcement.link.replace(/[^a-zA-Z0-9]/g, "-")}-${artist.replace(/[^a-zA-Z0-9]/g, "-")}`,
             announcedDate: new Date().toISOString().split("T")[0],
             notified: 0,
-          };
-        },
-      );
+          });
+        }
+      }
 
       try {
         await this.emailNotifier.sendConcertNotification(concertsForEmail);
