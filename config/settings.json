@@ -24,6 +24,6 @@
   "dataSources": {
     "bandsintown": true,
     "songkick": true,
-    "socialMedia": false
+    "socialMedia": true
   }
 }

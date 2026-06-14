@@ -3,8 +3,8 @@ import cron from "node-cron";
 import fs from "fs";
 import path from "path";
 import { ConcertDatabase, Concert } from "./database/schema";
-import { BandsintownCollector } from "./collectors/bandsintown";
-import { SongkickCollector } from "./collectors/songkick";
+import { RSSFeedCollector } from "./collectors/rss-feeds";
+import { WebScraper } from "./collectors/web-scraper";
 import { EmailNotifier } from "./notifiers/email";
 import { ConcertProcessor } from "./processors/nlp";
 
@@ -32,10 +32,10 @@ interface Settings {
   };
 }
 
-class ConcertTracker {
+class ConcertTrackerV2 {
   private db: ConcertDatabase;
-  private bandsintownCollector: BandsintownCollector;
-  private songkickCollector?: SongkickCollector;
+  private rssCollector: RSSFeedCollector;
+  private webScraper: WebScraper;
   private emailNotifier: EmailNotifier;
   private processor: ConcertProcessor;
   private config: Config;
@@ -54,18 +54,8 @@ class ConcertTracker {
     this.db = new ConcertDatabase(dbPath);
 
     // Initialize collectors
-    const bandsintownAppId =
-      process.env.BANDSINTOWN_APP_ID || "concert-tracker";
-    this.bandsintownCollector = new BandsintownCollector(bandsintownAppId);
-
-    const songkickApiKey = process.env.SONGKICK_API_KEY;
-    if (songkickApiKey) {
-      this.songkickCollector = new SongkickCollector(songkickApiKey);
-    } else {
-      console.log(
-        "⚠️  Songkick API key not provided, skipping Songkick collector",
-      );
-    }
+    this.rssCollector = new RSSFeedCollector();
+    this.webScraper = new WebScraper();
 
     // Initialize email notifier
     this.emailNotifier = new EmailNotifier({
@@ -88,97 +78,173 @@ class ConcertTracker {
   }
 
   async checkForConcerts(): Promise<void> {
-    console.log("\n🎵 Starting concert check...");
+    console.log("\n🎵 Starting concert check (Web Scraping Mode)...");
     console.log(`📅 ${new Date().toLocaleString("en-IE")}\n`);
 
-    const allConcerts: Concert[] = [];
+    const artistNames = this.config.artists.map((a) => a.name);
+    const newAnnouncements: Array<{
+      artist: string;
+      title: string;
+      link: string;
+      source: string;
+      content: string;
+    }> = [];
 
-    // Collect from Bandsintown
-    console.log("🔍 Checking Bandsintown...");
-    const artistNames = this.config.artists.map(
-      (a) => a.bandsintownId || a.name,
-    );
-    const locationNames = this.config.locations.flatMap((loc) => loc.cities);
+    // 1. Check RSS feeds from music news sites
+    console.log("📰 Checking music news RSS feeds...");
+    const rssResults = await this.rssCollector.checkAllFeeds(artistNames);
 
-    const bandsintownConcerts =
-      await this.bandsintownCollector.getEventsForMultipleArtists(
-        artistNames,
-        locationNames,
-      );
-    allConcerts.push(...bandsintownConcerts);
-    console.log(
-      `✅ Found ${bandsintownConcerts.length} concerts on Bandsintown\n`,
-    );
+    for (const result of rssResults) {
+      // Analyze with NLP to determine if it's a real announcement
+      const analysis = this.processor.detectAnnouncement(result.content);
 
-    // Collect from Songkick if available
-    if (this.songkickCollector) {
-      console.log("🔍 Checking Songkick...");
-      const songkickConcerts =
-        await this.songkickCollector.getEventsForMultipleArtists(
-          this.config.artists,
+      if (analysis.isAnnouncement && analysis.confidence > 0.4) {
+        console.log(
+          `  ✨ Found: ${result.title} (confidence: ${(analysis.confidence * 100).toFixed(0)}%)`,
         );
-      allConcerts.push(...songkickConcerts);
-      console.log(`✅ Found ${songkickConcerts.length} concerts on Songkick\n`);
+        newAnnouncements.push({
+          artist: result.matchedArtists.join(", "),
+          title: result.title,
+          link: result.link,
+          source: result.source,
+          content: result.content,
+        });
+      }
     }
 
-    // Filter concerts
-    console.log("🔍 Filtering concerts...");
-    let filteredConcerts = this.processor.filterByLocation(allConcerts);
+    // 2. Scrape venue websites
+    console.log("\n🏛️  Checking venue websites...");
+    const venueResults = await this.webScraper.scrapeAllVenues(artistNames);
 
-    // Filter by date range
-    const minDaysNotice = this.settings.notificationPreferences.minDaysNotice;
-    filteredConcerts = filteredConcerts.filter((concert) =>
-      this.processor.isWithinDateRange(concert, minDaysNotice),
-    );
+    for (const result of venueResults) {
+      console.log(`  ✨ Found: ${result.artist} at ${result.venue}`);
+      newAnnouncements.push({
+        artist: result.artist,
+        title: `${result.artist} at ${result.venue}`,
+        link: result.url,
+        source: result.venue,
+        content: result.text,
+      });
+    }
 
-    console.log(
-      `✅ ${filteredConcerts.length} concerts match your preferences\n`,
-    );
+    // 3. Google search for each artist (optional, can be rate-limited)
+    if (process.env.ENABLE_GOOGLE_SEARCH === "true") {
+      console.log("\n🔍 Searching Google for tour announcements...");
+      for (const artist of artistNames) {
+        const links = await this.webScraper.searchGoogle(artist, "Ireland");
+        console.log(`  Found ${links.length} links for ${artist}`);
 
-    // Store new concerts and collect ones to notify about
-    const newConcerts: Concert[] = [];
-
-    for (const concert of filteredConcerts) {
-      const existing = this.db.getConcertBySourceId(concert.sourceId);
-
-      if (!existing) {
-        const added = this.db.addConcert(concert);
-        if (added) {
-          newConcerts.push(concert);
-          console.log(
-            `✨ New concert: ${concert.artistName} - ${concert.venueCity} (${concert.eventDate})`,
-          );
+        // Scrape top results
+        for (const link of links.slice(0, 3)) {
+          const pageResults = await this.webScraper.scrapePage(link, [artist]);
+          for (const result of pageResults) {
+            const analysis = this.processor.detectAnnouncement(result.text);
+            if (analysis.isAnnouncement) {
+              newAnnouncements.push({
+                artist: result.artist,
+                title: `${result.artist} tour announcement`,
+                link: result.url,
+                source: "Google Search",
+                content: result.text,
+              });
+            }
+          }
+          await new Promise((resolve) => setTimeout(resolve, 2000));
         }
       }
     }
 
-    // Send notifications for new concerts
-    if (newConcerts.length > 0) {
-      console.log(
-        `\n📧 Sending notification for ${newConcerts.length} new concert(s)...`,
+    // Deduplicate announcements by URL
+    const uniqueAnnouncements = Array.from(
+      new Map(newAnnouncements.map((a) => [a.link, a])).values(),
+    );
+
+    console.log(
+      `\n📊 Summary: Found ${newAnnouncements.length} announcements (${uniqueAnnouncements.length} unique)`,
+    );
+
+    if (uniqueAnnouncements.length > 0) {
+      // Convert announcements to Concert format for email
+      const concertsForEmail: Concert[] = uniqueAnnouncements.map(
+        (announcement) => {
+          // Try to extract date from content (simple regex)
+          const dateMatch = announcement.content.match(
+            /\b(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})\b/,
+          );
+          let eventDate = "TBD";
+
+          if (dateMatch) {
+            // Try to parse the date
+            const day = dateMatch[1];
+            const month = dateMatch[2];
+            const year =
+              dateMatch[3].length === 2 ? `20${dateMatch[3]}` : dateMatch[3];
+            eventDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+          }
+
+          return {
+            artistName: announcement.artist,
+            venueName: "TBD",
+            venueCity: "Ireland",
+            venueCountry: "Ireland",
+            eventDate: eventDate,
+            eventUrl: announcement.link,
+            source: announcement.source,
+            sourceId: `web-${announcement.link.replace(/[^a-zA-Z0-9]/g, "-")}`,
+            announcedDate: new Date().toISOString().split("T")[0],
+            notified: 0,
+          };
+        },
       );
 
-      const sortedConcerts = this.processor.sortByRelevance(newConcerts);
-
       try {
-        await this.emailNotifier.sendConcertNotification(sortedConcerts);
-
-        // Mark as notified
-        for (const concert of newConcerts) {
-          const stored = this.db.getConcertBySourceId(concert.sourceId);
-          if (stored?.id) {
-            this.db.markAsNotified(stored.id);
-          }
-        }
+        await this.emailNotifier.sendConcertNotification(concertsForEmail);
+        console.log("✅ Notification sent!");
       } catch (error) {
         console.error("❌ Failed to send notification:", error);
       }
+
+      // Store in database
+      for (const concert of concertsForEmail) {
+        concert.notified = 1;
+        this.db.addConcert(concert);
+      }
     } else {
-      console.log("\n✅ No new concerts found");
+      console.log("✅ No new announcements found");
     }
 
-    console.log("\n" + this.processor.getSummary(filteredConcerts));
-    console.log("✅ Concert check complete!\n");
+    console.log("\n✅ Concert check complete!\n");
+  }
+
+  private generateAnnouncementEmail(
+    announcements: Array<{
+      artist: string;
+      title: string;
+      link: string;
+      source: string;
+      content: string;
+    }>,
+  ): string {
+    let html = `
+      <h1>🎵 New Concert Announcements Found!</h1>
+      <p>Found ${announcements.length} potential concert announcement(s):</p>
+    `;
+
+    for (const announcement of announcements) {
+      html += `
+        <div style="border-left: 4px solid #1DB954; padding: 15px; margin: 15px 0; background: #f8f9fa;">
+          <h3>${announcement.artist}</h3>
+          <p><strong>${announcement.title}</strong></p>
+          <p><em>Source: ${announcement.source}</em></p>
+          <p>${announcement.content.substring(0, 300)}...</p>
+          <a href="${announcement.link}" style="background: #1DB954; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block; margin-top: 10px;">
+            Read More
+          </a>
+        </div>
+      `;
+    }
+
+    return html;
   }
 
   async testSetup(): Promise<void> {
@@ -190,38 +256,14 @@ class ConcertTracker {
 
     if (!emailOk) {
       console.log("\n⚠️  Email service not configured properly.");
-      console.log("Please check your .env file and ensure:");
-      console.log("  - EMAIL_USER is set to your Gmail address");
-      console.log("  - EMAIL_PASSWORD is set to your app-specific password");
-      console.log("  - You have enabled 2FA and created an app password at:");
-      console.log("    https://myaccount.google.com/apppasswords\n");
-    }
-
-    // Test API connections
-    console.log("\nTesting Bandsintown API...");
-    const testArtist = this.config.artists[0];
-    const testConcerts = await this.bandsintownCollector.getArtistEvents(
-      testArtist.bandsintownId || testArtist.name,
-    );
-    console.log(
-      `✅ Bandsintown API working (found ${testConcerts.length} events for ${testArtist.name})`,
-    );
-
-    if (this.songkickCollector) {
-      console.log("\nTesting Songkick API...");
-      const artistId = await this.songkickCollector.searchArtist(
-        testArtist.name,
-      );
-      if (artistId) {
-        console.log(`✅ Songkick API working (found artist ID: ${artistId})`);
-      }
+      console.log("Please check your .env file.");
     }
 
     console.log("\n✅ Setup test complete!\n");
   }
 
   startScheduler(): void {
-    const schedule = process.env.CRON_SCHEDULE || "0 9 * * *"; // Default: 9 AM daily
+    const schedule = process.env.CRON_SCHEDULE || "0 9 * * *";
 
     console.log(`🕐 Scheduler started with cron: ${schedule}`);
     console.log("   (Default: Daily at 9:00 AM)\n");
@@ -234,7 +276,6 @@ class ConcertTracker {
       }
     });
 
-    // Keep the process running
     console.log("✅ Bot is running! Press Ctrl+C to stop.\n");
   }
 
@@ -245,9 +286,8 @@ class ConcertTracker {
 
 // Main execution
 async function main() {
-  const tracker = new ConcertTracker();
+  const tracker = new ConcertTrackerV2();
 
-  // Check command line arguments
   const args = process.argv.slice(2);
 
   if (args.includes("--test")) {
@@ -257,7 +297,6 @@ async function main() {
     await tracker.checkForConcerts();
     tracker.close();
   } else {
-    // Run once immediately, then start scheduler
     await tracker.checkForConcerts();
     tracker.startScheduler();
   }

@@ -6,11 +6,10 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "start:v2": "node dist/index-v2.js",
     "dev": "npx ts-node src/index.ts",
-    "dev:v2": "npx ts-node src/index-v2.ts",
-    "check": "npx ts-node src/index-v2.ts --check-now",
-    "test": "npx ts-node src/index-v2.ts --test"
+    "check": "npx ts-node src/index.ts --check-now",
+    "test": "npx ts-node src/index.ts --test",
+    "test:email": "npx ts-node src/test-email.ts"
   },
   "keywords": [
     "concert",

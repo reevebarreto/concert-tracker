@@ -123,13 +123,25 @@ export class EmailNotifier {
       html += `<h2>${artist}</h2>`;
 
       for (const concert of artistConcerts) {
-        const eventDate = new Date(concert.eventDate);
-        const formattedDate = eventDate.toLocaleDateString("en-IE", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        });
+        // Handle date formatting - check if it's a valid date or "TBD"
+        let formattedDate = "Date TBD";
+
+        if (concert.eventDate && concert.eventDate !== "TBD") {
+          try {
+            const eventDate = new Date(concert.eventDate);
+            // Check if date is valid
+            if (!isNaN(eventDate.getTime())) {
+              formattedDate = eventDate.toLocaleDateString("en-IE", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+            }
+          } catch (e) {
+            // If date parsing fails, keep "Date TBD"
+          }
+        }
 
         html += `
           <div class="concert">

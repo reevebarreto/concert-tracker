@@ -41,6 +41,31 @@ export class RSSFeedCollector {
         name: "Brooklyn Vegan",
         type: "music-news",
       },
+      {
+        url: "https://www.billboard.com/feed/",
+        name: "Billboard.com",
+        type: "music-news",
+      },
+      {
+        url: "https://loudwire.com/feed/",
+        name: "Loudwire",
+        type: "music-news",
+      },
+      {
+        url: "https://feeds.npr.org/1039/rss.xml",
+        name: "NPR Music",
+        type: "music-news",
+      },
+      {
+        url: "https://ultimateclassicrock.com/feed/",
+        name: "Ultimate Classic Rock",
+        type: "music-news",
+      },
+      {
+        url: "https://feeds.feedburner.com/metalunderground",
+        name: "Metal Underground",
+        type: "music-news",
+      },
     ];
   }
 
